@@ -25,3 +25,8 @@ This means, that no answers from the box will be processed at the moment.
 * split CLI and library
 * support text "rendering" and marquees
 * support everything that could be done using the "original" android app
+
+# Timebox package
+In addition to the CLI interface by ScR4tCh, a package has been added with modules the may be useful to communicate with the Timebox (package directory).
+An initial prototcol documentation can be found in 'docs'.
+Some simple example applications in 'examples'.
