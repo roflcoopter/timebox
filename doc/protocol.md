@@ -5,7 +5,7 @@ It is a draft documentation of the protocol used to interact with the Divoom Tim
 ## setting up a connection
 Communication to the Timebox is established by opening a bluetooth socket on port 4 of the Timebox.
 Serial data is exchanged as sequences of bytes. We will use hexadecimal notation for the data in this document. After opening the connection, the Timebox will initially respond with the 
-byte sequence 00 05 48 45 4C 4C 4F 00 (which spells 'HELLO'). This byte sequence deviates from the structure of the subsequent communications.
+byte sequence `00 05 48 45 4C 4C 4F 00` (which spells 'HELLO'). This byte sequence deviates from the structure of the subsequent communications.
 
 ## message structure
 From the client to the Timebox and vice versa, data is exchanged in the form of *messages* with a particular format.
@@ -19,10 +19,10 @@ From the client to the Timebox and vice versa, data is exchanged in the form of 
 
 ## command structure
 * The message payload obeys the following structure. We will call them *commands*.
-* All commands (both to and from the Timebox) start with the command length, coded in two bytes, again LSB first. For example, in the command to view the clock: 04 00 45 00, the initial bytes 04 00 indicate the command length (4).
-  (I am assuming that the length is coded in two bytes. I have not seen a command yet longer than 255 bytes. Hence I have never observed a value different from 0 for the second byte of a command.)
+* All commands (both to and from the Timebox) start with the command length, coded in two bytes, again LSB first. For example, in the command to view the clock: `05 00 45 00 01`, the initial bytes 05 00 indicate the command length (5).
+  (I am assuming that the length is coded in two bytes. I have not seen a command yet longer than 255 bytes. Hence I have never observed a value different from 0 for the second byte of a command.) Note that the full *message* corresponding to this command, including masking, checksum and end markers is: `01 05 00 45 00 03 04 4B 00 02`.
 * The command length is followed by one byte indicating the actual command type (0x45, 'switch view' in the example)
-* The remainder of the command depends on the command type (00=clock in the example) and sometimes has optional extensions (such as specifying the color of the clock)
+* The remainder of the command depends on the command type (00=clock, 01=24h in the example) and sometimes has optional extensions (such as specifying the color of the clock)
 * The responses from the Timebox to the client have a similar structure. They start with the two byte command length. The third byte has as far as I have observed always the value 0x04. The fourth byte is the command number. The fifth byte seems always 0x55, command dependent data follows after the fifth byte, if any.
 * Responses are typically returned after commands to the Timebox with the same command, followed by 55, possibly followed by additional information. For instance, when some information was requested from the Timebox such as the current radio frequency. Or without additional information as an acknowledgement.
 * The response to a malformed command is a negative acknowledgement of the form XX AA, where XX is the command number that was erroneous.
