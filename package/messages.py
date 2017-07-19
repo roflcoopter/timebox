@@ -16,7 +16,8 @@ class TimeBoxMessages:
         0x05 or 0x06 respectively"""
         escpayload = []
         for payload_data in payload:
-            escpayload += [0x03, payload_data + 0x03] if payload_data in range(0x01, 0x04) else [payload_data]
+            escpayload += \
+                [0x03, payload_data + 0x03] if payload_data in range(0x01, 0x04) else [payload_data]
         return escpayload
 
     def unescape(self, data):
@@ -63,13 +64,13 @@ class TimeBoxMessages:
     @classmethod
     def static_image_payload(cls, imag):
         """Create the message payload for the image."""
-        resmsg = [0] * 189
+        resmsg = [0] * (((imag.height * imag.width * 3 + 1) >> 1) + 7)
         resmsg[0:7] = [0xbd, 0x00, 0x44, 0x00, 0x0a, 0x0a, 0x04]
 
         # nibble index to write next pixel value
         nix = 14
-        for yix in range(imag.width):
-            for xix in range(imag.height):
+        for yix in range(imag.height):
+            for xix in range(imag.width):
                 for cix in range(3):
                     pdat = imag.get_pixel_data(xix, yix, cix)
                     if nix&1 != 0:

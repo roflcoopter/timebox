@@ -7,7 +7,9 @@ class TimeBoxImage:
     height = 11
     image = 0
 
-    def __init__(self):
+    def __init__(self, height=11, width=11):
+        self.height = height
+        self.width = width
         self.image = \
             [[[0 for c in range(3)] for x in range(self.width)] for y in range(self.height)]
 

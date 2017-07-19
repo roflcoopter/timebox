@@ -24,8 +24,8 @@ class TimeBox:
         "set radio frequency": 0x61
     }
 
-    socket = 0
-    messages = 0
+    socket = None
+    messages = None
     message_buf = []
 
     def __init__(self):
