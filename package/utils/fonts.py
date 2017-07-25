@@ -2,7 +2,7 @@
 from utils.gifreader import GIFReader
 
 class Fonts:
-    """ Implements the code table for LZW decompression."""
+    """ Manages a simpe sprite based font."""
     gamma_value = None
     gamma_table = None
     gif_reader = None
