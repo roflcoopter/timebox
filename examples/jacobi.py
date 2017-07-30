@@ -25,13 +25,20 @@ class JacobiIteration:
         for row in range(1, self.size+1):
             for column in range(1, self.size+1):
                 color = self._color_of_entry(row, column)
-                if row == self.pivot_row or column == self.pivot_row or \
+                # color the pivots blue, rows and columns of the pivot red
+                # and the rest green
+                if row == column:
+                    image.put_pixel_gamma(column-1, row-1, color[0], color[0], color[1])
+                elif (row == self.pivot_row and column == self.pivot_column) or \
+                   (row == self.pivot_column and column == self.pivot_row):
+                    image.put_pixel_gamma(column-1, row-1, color[1], color[2], color[0])
+                elif row == self.pivot_row or column == self.pivot_row or \
                    row == self.pivot_column or column == self.pivot_column:
                     image.put_pixel_gamma(column-1, row-1, color[0], color[1], color[2])
                 else:
-                    image.put_pixel_gamma(column-1, row-1, color[1], color[0], color[2])
-        image.put_pixel(self.pivot_column-1, self.pivot_row-1, 0, 0, 15)
-        image.put_pixel(self.pivot_row-1, self.pivot_column-1, 0, 0, 15)
+                    image.put_pixel_gamma(column-1, row-1, color[2], color[0], color[1])
+        #image.put_pixel(self.pivot_column-1, self.pivot_row-1, 0, 0, 15)
+        #image.put_pixel(self.pivot_row-1, self.pivot_column-1, 0, 0, 15)
         return image
 
 
@@ -40,9 +47,9 @@ class JacobiIteration:
         self.matrix = [[0.0 for column in range(1, self.size+1)] for row in range(1, self.size+1)]
         for row in range(1, self.size+1):
             for column in range(1, row+1):
-                val = random.normalvariate(0.0, 1.0)
-                self.matrix[row-1][column-1] = val
-                self.matrix[column-1][row-1] = val
+                self.matrix[row-1][column-1] = \
+                self.matrix[column-1][row-1] = \
+                    random.normalvariate(0.0, 1.0)
 
     def _color_of_entry(self, row, column):
         return self._color_map(self.matrix[row-1][column-1])
@@ -56,17 +63,14 @@ class JacobiIteration:
     def _select_pivot(self):
         """Select the pivot row and column."""
         # find the element with maximal absolute value on the lower triangle
-        maxabs = abs(self.matrix[1][0])
-        maxrow = 2
-        maxcolumn = 1
+        maxrow, maxcolumn = 2, 1
+        maxabs = abs(self.matrix[maxrow-1][maxcolumn-1])
         for row in range(3, self.size+1):
             for column in range(1, row):
                 if maxabs < abs(self.matrix[row-1][column-1]):
                     maxabs = abs(self.matrix[row-1][column-1])
-                    maxrow = row
-                    maxcolumn = column
-        self.pivot_row = maxrow
-        self.pivot_column = maxcolumn
+                    maxrow, maxcolumn = row, column
+        self.pivot_row, self.pivot_column = maxrow, maxcolumn
 
         tan_two_theta = 2 * self.matrix[maxrow-1][maxcolumn-1] / \
             (self.matrix[maxrow-1][maxrow-1]-self.matrix[maxcolumn-1][maxcolumn-1])
@@ -123,9 +127,8 @@ class JacobiIteration:
 
     def iterate(self):
         """Perform one iteration of Jacobi's method."""
-        (row, column, theta) = self._select_pivot()
-        srot = sin(theta)
-        crot = cos(theta)
+        row, column, theta = self._select_pivot()
+        srot, crot = sin(theta), cos(theta)
         # update columns according to the rotation
         self._rotate_column(row, column, srot, crot)
         # update rows according to the rotation
@@ -144,8 +147,9 @@ while True:
     JACOBI.randomize_matrix()
 
     THETA = 1
-    while abs(THETA) > 0.01:
+    while abs(THETA) > 0.05:
         THETA = JACOBI.iterate()
         IMAGE = JACOBI.as_image()
         TIMEBOX.set_static_image(IMAGE)
-        sleep(0.33)
+        sleep(0.5)
+        TIMEBOX.clear_input_buffer()

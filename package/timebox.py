@@ -41,16 +41,20 @@ class TimeBox:
         self.socket.connect((host, port))
         self.socket.setblocking(0)
 
-
     def close(self):
         """Closes the connection to the TimeBox."""
         self.socket.close()
 
     def receive(self, num_bytes=1024):
-        """Receive n bytes of data from the TimeBox and put it in the input buffer."""
+        """Receive n bytes of data from the TimeBox and put it in the input buffer.
+        Returns the number of bytes received."""
         ready = select.select([self.socket], [], [], 0.1)
         if ready[0]:
-            self.message_buf += self.socket.recv(num_bytes)
+            data = self.socket.recv(num_bytes)
+            self.message_buf += data
+            return len(data)
+        else:
+            return 0
 
     def send_raw(self, data):
         """Send raw data to the TimeBox."""
@@ -84,8 +88,9 @@ class TimeBox:
             return False
         if self.message_buf[0] != 0x01:
             return True
-        endmarks = [x for x in self.message_buf if x == 0x02]
-        return  len(endmarks) > 0
+        #endmarks = [x for x in self.message_buf if x == 0x02]
+        #return  len(endmarks) > 0
+        return 0x02 in self.message_buf
 
     def buffer_starts_with_garbage(self):
         """Check if the input buffer starts with data other than a message."""
@@ -94,13 +99,10 @@ class TimeBox:
         return self.message_buf[0] != 0x01
 
     def remove_garbage(self):
-        """Remove data from the input buffer that is nof the start of a message."""
-        if not 0x01 in self.message_buf:
-            pos = len(self.message_buf)
-        else:
-            pos = self.message_buf.index(0x01)
+        """Remove data from the input buffer that is not the start of a message."""
+        pos = self.message_buf.index(0x01) if 0x01 in self.message_buf else len(self.message_buf)
         res = self.message_buf[0:pos]
-        self.message_buf = self.message_buf[pos:len(self.message_buf)]
+        self.message_buf = self.message_buf[pos:]
         return res
 
     def remove_message(self):
@@ -108,10 +110,14 @@ class TimeBox:
         there is a complete message without leading garbage data"""
         if not 0x02 in self.message_buf:
             raise Exception('There is no message')
-        pos = self.message_buf.index(0x02)+1
+        pos = self.message_buf.index(0x02) + 1
         res = self.message_buf[0:pos]
-        self.message_buf = self.message_buf[pos:len(self.message_buf)]
+        self.message_buf = self.message_buf[pos:]
         return res
+
+    def drop_message_buffer(self):
+        """Drop all dat currently in the message buffer,"""
+        self.message_buf = []
 
     def set_static_image(self, image):
         """Set the image on the TimeBox"""
@@ -139,3 +145,13 @@ class TimeBox:
         if not color is None:
             args += color
         self.send_command("set view", args)
+
+    def clear_input_buffer(self):
+        """Read all input from TimeBox and remove from buffer. """
+        while self.receive() > 0:
+            self.drop_message_buffer()
+
+    def clear_input_buffer_quick(self):
+        """Quickly read most input from TimeBox and remove from buffer. """
+        while self.receive(512) == 512:
+            self.drop_message_buffer()

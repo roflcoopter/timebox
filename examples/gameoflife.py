@@ -15,7 +15,11 @@ while True:
         for j in range(GOL.animationSteps):
             TIMEBOX.set_static_image(GOL.as_image(j))
             sleep(0.04)
+        old_board = GOL.board
         GOL.iterate()
+        TIMEBOX.clear_input_buffer_quick()
+        if old_board == GOL.board:
+            sleep(4.0)
+            break
 
 TIMEBOX.close()
-

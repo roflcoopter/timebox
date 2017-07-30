@@ -27,6 +27,7 @@ From the client to the Timebox and vice versa, data is exchanged in the form of 
 * Responses are typically returned after commands to the Timebox with the same command, followed by 55, possibly followed by additional information. For instance, when some information was requested from the Timebox such as the current radio frequency. Or without additional information as an acknowledgement.
 * The response to a malformed command is a negative acknowledgement of the form XX AA, where XX is the command number that was erroneous.
 * The initial communication from the Timebox does not follow the usual structure. It is always 00 05 48 45 4C 4C 4F 00.
+* It seems that not consuming the data from the TimeBox eventually leads to crashing the TimeBox.
 
 ## command list
 Some of the known commands:

@@ -20,6 +20,7 @@ class Ball:
     col_b = 0
 
     gravity = 15
+    drag = 19.94
 
     def __init__(self, r, g, b):
         self.col_r = r
@@ -37,8 +38,8 @@ class Ball:
     def update(self, deltat):
         """update the positions"""
         # gravity
-        self.vel_x *= 0.9997
-        self.vel_y *= 0.9997
+        self.vel_x *= self.drag * deltat
+        self.vel_y *= self.drag * deltat
         self.vel_y -= self.gravity * deltat
 
         # update pos
@@ -68,16 +69,15 @@ class Ball:
 TIMEBOX = TimeBox()
 TIMEBOX.connect()
 
-BALLS = [Ball(0xf, 0x0, 0x0), Ball(0x0, 0xf, 0x0), Ball(0x0, 0x0, 0xf)]
-BALLS.extend([Ball(0xf, 0xf, 0x0), Ball(0x0, 0xf, 0xf), Ball(0xf, 0x0, 0xf)])
+BALLS = [Ball(0xf, 0x0, 0x0), Ball(0x0, 0xf, 0x0), Ball(0x0, 0x0, 0xf), \
+         Ball(0xf, 0xf, 0x0), Ball(0x0, 0xf, 0xf), Ball(0xf, 0x0, 0xf)]
 
 while True:
     IMAGE = TimeBoxImage()
-    for b in BALLS:
-        b.image_add(IMAGE)
+    for ball in BALLS:
+        ball.image_add(IMAGE)
+        ball.update(DELAY)
     TIMEBOX.set_static_image(IMAGE)
-    for b in BALLS:
-        b.update(DELAY)
     sleep(DELAY)
 
 TIMEBOX.close()

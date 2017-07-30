@@ -61,8 +61,7 @@ class TimeBoxMessages:
         escaped_payload = self.escape_payload(cs_payload)
         return [0x01] + escaped_payload + [0x02]
 
-    @classmethod
-    def static_image_payload(cls, imag):
+    def static_image_payload(self, imag):
         """Create the message payload for the image."""
         resmsg = [0] * (((imag.height * imag.width * 3 + 1) >> 1) + 7)
         resmsg[0:7] = [0xbd, 0x00, 0x44, 0x00, 0x0a, 0x0a, 0x04]
@@ -79,8 +78,7 @@ class TimeBoxMessages:
                     nix = nix + 1
         return resmsg
 
-    @classmethod
-    def dynamic_image_payload(cls, imag, frame_num, frame_delay):
+    def dynamic_image_payload(self, imag, frame_num, frame_delay):
         """Create the message payload for the image in an animation."""
         resmsg = [0] * 191
         resmsg[0:9] = [0xbf, 0x00, 0x49, 0x00, 0x0a, 0x0a, 0x04, frame_num, frame_delay]
