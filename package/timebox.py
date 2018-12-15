@@ -164,7 +164,7 @@ class TimeBox:
 
     # offset determines the location of the first column of the display
     # relative to the entire text image
-    def show_scrolling_text(self, text)
+    def show_scrolling_text(self, text):
         for offset in range(-11, len(text)*(FONT.font_width + SPACING)+11):
             # create a new image for this frame
             # range over all columns on the display
