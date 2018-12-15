@@ -4,4 +4,5 @@ setup(name='timebox',
       package_dir = {'': 'package'},
       include_package_data=True,
       py_modules=['timebox', 'timeboximage', 'messages', 'utils/fonts', 'utils/gifreader'],
+      data_files=[('examples', ['fonts/arcadeclassic.gif'])]
       )
