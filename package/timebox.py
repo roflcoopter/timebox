@@ -5,11 +5,6 @@ from bluetooth import BluetoothSocket, RFCOMM
 from messages import TimeBoxMessages
 from utils.fonts import Fonts
 
-FONTFILE = "./timebox-fonts/arcadeclassic.gif"
-
-FONT = Fonts(FONTFILE, 9, 9, 10, 0.6)
-SPACING = 2
-
 class TimeBox:
     """Class TimeBox encapsulates the TimeBox communication."""
     
@@ -161,33 +156,3 @@ class TimeBox:
         """Quickly read most input from TimeBox and remove from buffer. """
         while self.receive(512) == 512:
             self.drop_message_buffer()
-
-    # offset determines the location of the first column of the display
-    # relative to the entire text image
-    def show_scrolling_text(self, text):
-        for offset in range(-11, len(text)*(FONT.font_width + SPACING)+11):
-            # create a new image for this frame
-            # range over all columns on the display
-            for xix in range(11):
-                # compute the corresponding global x value
-                gxix = offset + xix
-                # compute the relative x value to the current character
-                rxix = gxix % (FONT.font_width + SPACING)
-                # check if rxix is inside a character or not
-                if rxix < FONT.font_width:
-                    # determine which character it is in
-                    charnum = gxix // (FONT.font_width + SPACING)
-                    # if it is inside the range of the text to display
-                    if charnum in range(len(text)):
-                        # get the character itself
-                        char = text[charnum]
-                        # iterate over the rows on the display
-                        for yix in range(FONT.font_height):
-                            # get the pixel color
-                            pix = FONT.get_pixel(char, rxix, yix)
-                            # set the Timebox image pixel
-                            IMAGE.put_pixel(xix, yix+1, pix[0], pix[1], pix[2])
-            # send the new image to the Timebox
-            self.set_static_image(IMAGE)
-            # sleep for the animation
-            sleep(0.1)
