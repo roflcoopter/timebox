@@ -1,8 +1,7 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 setup(name='timebox',
       version='0.1',
       package_dir = {'': 'package'},
-      include_package_data=True,
       py_modules=['timebox', 'timeboximage', 'messages', 'utils/fonts', 'utils/gifreader'],
-      data_files=[('examples', ['examples/fonts/arcadeclassic.gif'])]
+      data_files=[('timebox-fonts', ['examples/fonts/arcadeclassic.gif'])]
       )
